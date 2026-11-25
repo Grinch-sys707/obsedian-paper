@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBSIDIAN — Curated 4K & Mobile Wallpapers</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        obsidian: '#07070A',
+                        glass: 'rgba(255, 255, 255, 0.035)',
+                        glassBorder: 'rgba(255, 255, 255, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Custom Scrollbar */
+        body {
+            background-color: #07070A;
+            color: #F4F4F5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #07070A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.14);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Liquid Ambient Background Blobs */
+        .ambient-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .liquid-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(110px);
+            opacity: 0.35;
+            will-change: transform;
+        }
+
+        .blob-1 {
+            width: 55vw;
+            height: 55vw;
+            max-width: 720px;
+            max-height: 720px;
+            background: radial-gradient(circle, rgba(49, 46, 129, 0.55) 0%, rgba(15, 23, 42, 0) 70%);
+            top: -15%;
+            left: -10%;
+            animation: floatLiquid1 22s ease-in-out infinite alternate;
+        }
+
+        .blob-2 {
+            width: 50vw;
+            height: 50vw;
+            max-width: 650px;
+            max-height: 650px;
+            background: radial-gradient(circle, rgba(30, 58, 138, 0.45) 0%, rgba(7, 7, 10, 0) 70%);
+            bottom: -15%;
+            right: -10%;
+            animation: floatLiquid2 26s ease-in-out infinite alternate;
+        }
+
+        .blob-3 {
+            width: 40vw;
+            height: 40vw;
+            max-width: 520px;
+            max-height: 520px;
+            background: radial-gradient(circle, rgba(88, 28, 135, 0.28) 0%, rgba(7, 7, 10, 0) 70%);
+            top: 40%;
+            left: 35%;
+            animation: floatLiquid3 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatLiquid1 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(6%, 8%) scale(1.08); }
+            100% { transform: translate(-4%, 4%) scale(0.96); }
+        }
+        @keyframes floatLiquid2 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-8%, -6%) scale(1.1); }
+            100% { transform: translate(5%, -3%) scale(0.95); }
+        }
+        @keyframes floatLiquid3 {
+            0% { transform: translate(0, 0) scale(0.95); }
+            50% { transform: translate(-6%, 7%) scale(1.05); }
+            100% { transform: translate(6%, -5%) scale(1); }
+        }
+
+        /* Frosted Liquid Glass Surfaces */
+        .liquid-glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.015) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        .liquid-glass-strong {
+            background: linear-gradient(145deg, rgba(20, 20, 28, 0.82) 0%, rgba(10, 10, 14, 0.92) 100%);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+        }
+
+        /* Card Entrance & Hover Micro-interactions */
+        .wallpaper-card {
+            opacity: 0;
+            transform: translateY(18px);
+            animation: cardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.45s ease;
+        }
+
+        .wallpaper-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8);
+        }
+
+        .wallpaper-card img {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+        }
+
+        .wallpaper-card:hover img {
+            transform: scale(1.04);
+        }
+
+        @keyframes cardReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Subtle Cursor Glow */
+        #cursorGlow {
+            position: fixed;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.07) 0%, rgba(0, 0, 0, 0) 70%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Hide scrollbar for horizontal filter pills on mobile */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-indigo-500/30 selection:text-white">
+
+    <!-- Ambient Liquid Background -->
+    <div class="ambient-canvas">
+        <div class="liquid-blob blob-1"></div>
+        <div class="liquid-blob blob-2"></div>
+        <div class="liquid-blob blob-3"></div>
+    </div>
+    <div id="cursorGlow" class="hidden md:block"></div>
+
+    <!-- Sticky Frosted Glass Navbar -->
+    <header class="sticky top-0 z-40 w-full liquid-glass border-x-0 border-t-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <a href="#" onclick="resetFilters()" class="flex items-center gap-3 group shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-white/15 to-white/5 border border-white/15 flex items-center justify-center shadow-inner group-hover:border-white/30 transition-colors">
+                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display font-semibold tracking-wider text-sm sm:text-base text-white">OBSIDIAN</span>
+                    <span class="text-[10px] tracking-widest uppercase text-zinc-400 hidden sm:block">Liquid Wallpaper Studio</span>
+                </div>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-md relative">
+                <div class="relative flex items-center">
+                    <svg class="w-4 h-4 text-zinc-400 absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search minimal, dark, space, 4K..." 
+                        class="w-full bg-white/[0.04] hover:bg-white/[0.06] focus:bg-white/[0.08] text-sm text-white placeholder-zinc-500 rounded-xl pl-10 pr-4 py-2.5 border border-white/10 focus:border-white/25 focus:outline-none transition-all"
+                    >
+                </div>
+            </div>
+
+            <!-- API Settings Button -->
+            <button 
+                onclick="openApiModal()" 
+                class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 text-xs sm:text-sm font-medium text-zinc-200 transition-all shrink-0"
+                title="Configure Free Pexels / Unsplash API"
+            >
+                <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
+                <span class="hidden sm:inline">API Key</span>
+                <svg class="w-4 h-4 text-zinc-400 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        
+        <!-- Editorial Hero Header -->
+        <section class="mb-8 sm:mb-10">
+            <h1 class="font-display text-2xl sm:text-4xl font-semibold tracking-tight text-white mb-2">
+                Curated Surfaces for Every Screen.
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-400 max-w-2xl">
+                High-resolution, distraction-free wallpapers tailored for smartphones, laptops, tablets, and ultrawide displays.
+            </p>
+        </section>
+
+        <!-- Device & Category Filter Bar -->
+        <section class="space-y-4 mb-8">
+            <!-- Device / Gadget Aspect Ratio Filter -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" id="deviceFilters">
+                <button data-device="all" class="device-btn active flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 bg-white text-black shadow-lg">
+                    <span>All Devices</span>
+                </button>
+                <button data-device="phone" class="device-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 bg-white/[0.04] text-zinc-300 border border-white/10 hover:bg-white/[0.08]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2" stroke-width="1.75"/></svg>
+                    <span>Phone (9:16)</span>
+                </button>
+                <button data-device="laptop" class="device-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 bg-white/[0.04] text-zinc-300 border border-white/10 hover:bg-white/[0.08]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm-1 14h20"/></svg>
+                    <span>Laptop / 4K (16:9)</span>
+                </button>
+                <button data-device="tablet" class="device-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 bg-white/[0.04] text-zinc-300 border border-white/10 hover:bg-white/[0.08]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" stroke-width="1.75"/></svg>
+                    <span>Tablet (4:3)</span>
+                </button>
+                <button data-device="ultrawide" class="device-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 bg-white/[0.04] text-zinc-300 border border-white/10 hover:bg-white/[0.08]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" stroke-width="1.75"/></svg>
+                    <span>Ultrawide (21:9)</span>
+                </button>
+            </div>
+
+            <!-- Category Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" id="categoryFilters">
+                <button data-cat="all" class="cat-btn active px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/15 text-white border border-white/20 transition-all shrink-0">All (210+)</button>
+                <button data-cat="Minimal" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent transition-all shrink-0">Minimal</button>
+                <button data-cat="Abstract" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent transition-all shrink-0">Abstract</button>
+                <button data-cat="Nature" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent transition-all shrink-0">Nature</button>
+                <button data-cat="Dark Tech" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent transition-all shrink-0">Dark Tech</button>
+                <button data-cat="Architecture" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent transition-all shrink-0">Architecture</button>
+                <button data-cat="Space" class="cat-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent transition-all shrink-0">Space</button>
+            </div>
+        </section>
+
+        <!-- Wallpaper Grid -->
+        <section id="wallpaperGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            <!-- Cards injected by JS -->
+        </section>
+
+        <!-- Load More Pagination -->
+        <div id="loadMoreContainer" class="mt-10 flex justify-center hidden">
+            <button onclick="loadMoreWallpapers()" class="px-6 py-3 rounded-xl liquid-glass hover:bg-white/10 text-sm font-medium text-white border border-white/15 transition-all flex items-center gap-2">
+                <span>Load More Wallpapers</span>
+                <span id="remainingCount" class="text-xs text-zinc-400"></span>
+            </button>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden py-20 text-center">
+            <div class="w-14 h-14 rounded-2xl liquid-glass mx-auto flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-1">No wallpapers found</h3>
+            <p class="text-sm text-zinc-400 mb-5">Try adjusting your device filter or search query.</p>
+            <button onclick="resetFilters()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-medium text-white border border-white/10 transition-all">
+                Reset Filters
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-white/[0.06] py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+            <p>OBSIDIAN Studio &bull; Crafted for high-DPI displays.</p>
+            <p>Supports Pexels & Unsplash Free APIs</p>
+        </div>
+    </footer>
+
+    <!-- Preview & Multi-Device Download Modal -->
+    <div id="previewModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md transition-opacity">
+        <div class="liquid-glass-strong rounded-2xl sm:rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto flex flex-col md:flex-row overflow-hidden animate-[cardReveal_0.3s_ease-out]">
+            
+            <!-- Left: Image Preview -->
+            <div class="md:w-3/5 bg-black/50 relative flex items-center justify-center min-h-[260px] sm:min-h-[380px] p-4">
+                <img id="modalImg" src="" alt="Wallpaper Preview" class="max-h-[65vh] w-auto rounded-xl object-contain shadow-2xl">
+                <button onclick="closePreviewModal()" class="md:hidden absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-white">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Right: Details & Multi-Device Downloads -->
+            <div class="md:w-2/5 p-6 sm:p-7 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/10">
+                <div>
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <div>
+                            <span id="modalCategory" class="text-[11px] uppercase tracking-widest text-indigo-400 font-medium">Category</span>
+                            <h2 id="modalTitle" class="font-display text-xl font-semibold text-white mt-0.5">Wallpaper Title</h2>
+                            <p id="modalAuthor" class="text-xs text-zinc-400 mt-1">By Artist</p>
+                        </div>
+                        <button onclick="closePreviewModal()" class="hidden md:flex w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 items-center justify-center text-zinc-300 transition-colors shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Color Palette -->
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-xs text-zinc-500 mr-1">Palette:</span>
+                        <div id="modalPalette" class="flex items-center gap-1.5"></div>
+                    </div>
+
+                    <!-- Multi-Device Download Options -->
+                    <div class="space-y-2.5">
+                        <p class="text-xs font-medium text-zinc-300 uppercase tracking-wider mb-2">Download for Device</p>
+                        
+                        <button onclick="downloadForDevice('phone')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2" stroke-width="1.75"/></svg>
+                                <div class="text-left">
+                                    <div class="text-xs font-medium text-white">Smartphone</div>
+                                    <div class="text-[11px] text-zinc-500">1080 &times; 1920 (9:16)</div>
+                                </div>
+                            </div>
+                            <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </button>
+
+                        <button onclick="downloadForDevice('laptop')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm-1 14h20"/></svg>
+                                <div class="text-left">
+                                    <div class="text-xs font-medium text-white">Laptop / Desktop 4K</div>
+                                    <div class="text-[11px] text-zinc-500">3840 &times; 2160 (16:9)</div>
+                                </div>
+                            </div>
+                            <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </button>
+
+                        <button onclick="downloadForDevice('tablet')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" stroke-width="1.75"/></svg>
+                                <div class="text-left">
+                                    <div class="text-xs font-medium text-white">Tablet / iPad</div>
+                                    <div class="text-[11px] text-zinc-500">2048 &times; 1536 (4:3)</div>
+                                </div>
+                            </div>
+                            <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </button>
+
+                        <button onclick="downloadForDevice('ultrawide')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" stroke-width="1.75"/></svg>
+                                <div class="text-left">
+                                    <div class="text-xs font-medium text-white">Ultrawide Monitor</div>
+                                    <div class="text-[11px] text-zinc-500">3440 &times; 1440 (21:9)</div>
+                                </div>
+                            </div>
+                            <svg class="w-4 h-4 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-white/10 text-[11px] text-zinc-500 flex items-center justify-between">
+                    <span>Free for personal use</span>
+                    <span>High-DPI Ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Settings Modal -->
+    <div id="apiModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+        <div class="liquid-glass-strong rounded-2xl max-w-md w-full p-6 sm:p-7 animate-[cardReveal_0.25s_ease-out]">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display text-lg font-semibold text-white">Live API Integration</h3>
+                <button onclick="closeApiModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-zinc-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <p class="text-xs text-zinc-400 leading-relaxed mb-5">
+                OBSIDIAN works out-of-the-box with our curated collection. To unlock millions of live wallpapers, paste your free API key from <strong>Pexels</strong> or <strong>Unsplash</strong>.
+            </p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-300 mb-1.5">Provider</label>
+                    <select id="apiProvider" class="w-full bg-white/[0.05] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/25">
+                        <option value="pexels" class="bg-zinc-900">Pexels API (pexels.com/api)</option>
+                        <option value="unsplash" class="bg-zinc-900">Unsplash API (unsplash.com/developers)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-300 mb-1.5">API Key</label>
+                    <input type="password" id="apiKeyInput" placeholder="Paste your free API key here..." class="w-full bg-white/[0.05] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/25">
+                </div>
+                <div class="flex items-center gap-3 pt-2">
+                    <button onclick="saveApiSettings()" class="flex-1 py-2.5 rounded-xl bg-white text-black font-medium text-sm hover:bg-zinc-200 transition-colors">
+                        Save & Connect
+                    </button>
+                    <button onclick="clearApiSettings()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-zinc-300 transition-colors">
+                        Use Curated
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden items-center gap-3 px-4 py-3 rounded-xl liquid-glass-strong border border-white/15 text-sm text-white shadow-2xl transition-all">
+        <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+        <span id="toastMsg">Notification</span>
+    </div>
+
+    <script>
+        // Programmatically generate 210+ unique wallpapers across 6 categories
+        const categories = ['Minimal', 'Abstract', 'Nature', 'Dark Tech', 'Architecture', 'Space'];
+        const devices = ['phone', 'laptop', 'tablet', 'ultrawide'];
+        const resLabels = { phone: 'Mobile 4K', laptop: '4K UHD', tablet: 'Retina 4:3', ultrawide: '5K Ultrawide' };
+        const adjectives = ['Obsidian', 'Silent', 'Monolith', 'Nocturne', 'Velvet', 'Carbon', 'Deep', 'Eclipse', 'Graphite', 'Liquid', 'Shadow', 'Midnight', 'Stealth', 'Lunar', 'Void', 'Abyssal'];
+        const nouns = ['Horizon', 'Waves', 'Geometry', 'Nebula', 'Peak', 'Grid', 'Structure', 'Prism', 'Dusk', 'Surface', 'Flow', 'Matrix', 'Silence', 'Orbit', 'Mirage'];
+        const artists = ['Obsidian Studio', 'Milad Fakurian', 'Pierre Châtel', 'NASA Archive', 'Simone Hutsch', 'Benjamin Voros', 'Paul Earle', 'Tezos Studio'];
+        const palettes = [
+            ['#07070A', '#1E1B4B', '#312E81'],
+            ['#09090B', '#18181B', '#3F3F46'],
+            ['#0B0F19', '#1E293B', '#475569'],
+            ['#050811', '#0F172A', '#0284C7'],
+            ['#090D16', '#1E3A8A', '#4C1D95']
+        ];
+
+        const curatedWallpapers = Array.from({ length: 210 }, (_, i) => {
+            const cat = categories[i % categories.length];
+            const dev = devices[i % devices.length];
+            const adj = adjectives[i % adjectives.length];
+            const noun = nouns[(i * 3) % nouns.length];
+            const seed = `obsidian_${cat.toLowerCase().replace(/\s+/g, '')}_${i + 1}`;
+            return {
+                id: `cur-${i + 1}`,
+                title: `${adj} ${noun} #${i + 1}`,
+                author: artists[i % artists.length],
+                category: cat,
+                device: dev,
+                res: resLabels[dev],
+                seed: seed,
+                baseUrl: `https://picsum.photos/seed/${seed}/1200/900`,
+                colors: palettes[i % palettes.length]
+            };
+        });
+
+        // App State
+        let state = {
+            wallpapers: [...curatedWallpapers],
+            device: 'all',
+            category: 'all',
+            search: '',
+            visibleCount: 24,
+            selectedWallpaper: null,
+            apiProvider: localStorage.getItem('obsidian_api_provider') || 'pexels',
+            apiKey: localStorage.getItem('obsidian_api_key') || ''
+        };
+
+        // DOM Elements
+        const grid = document.getElementById('wallpaperGrid');
+        const emptyState = document.getElementById('emptyState');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        const remainingCount = document.getElementById('remainingCount');
+        const searchInput = document.getElementById('searchInput');
+        const cursorGlow = document.getElementById('cursorGlow');
+
+        // Subtle Cursor Glow
+        document.addEventListener('mousemove', (e) => {
+            if (cursorGlow) {
+                cursorGlow.style.left = e.clientX + 'px';
+                cursorGlow.style.top = e.clientY + 'px';
+            }
+        });
+
+        // Render Wallpapers with Pagination
+        function renderGrid() {
+            const filtered = state.wallpapers.filter(item => {
+                const matchDevice = state.device === 'all' || item.device === state.device;
+                const matchCat = state.category === 'all' || item.category.toLowerCase() === state.category.toLowerCase();
+                const matchSearch = !state.search || 
+                    item.title.toLowerCase().includes(state.search.toLowerCase()) ||
+                    item.category.toLowerCase().includes(state.search.toLowerCase()) ||
+                    item.author.toLowerCase().includes(state.search.toLowerCase());
+                return matchDevice && matchCat && matchSearch;
+            });
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                loadMoreContainer.classList.add('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            const toShow = filtered.slice(0, state.visibleCount);
+
+            toShow.forEach((wp, index) => {
+                const card = document.createElement('div');
+                card.className = 'wallpaper-card group relative rounded-2xl overflow-hidden liquid-glass cursor-pointer aspect-[4/3] sm:aspect-[16/11]';
+                card.style.animationDelay = `${Math.min((index % 24) * 35, 350)}ms`;
+                card.onclick = () => openPreviewModal(wp);
+
+                const thumbUrl = wp.seed 
+                    ? `https://picsum.photos/seed/${wp.seed}/800/600` 
+                    : wp.baseUrl;
+
+                card.innerHTML = `
+                    <img src="${thumbUrl}" alt="${wp.title}" loading="lazy" class="w-full h-full object-cover brightness-90 contrast-105">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md border border-white/10 text-[10px] font-medium text-zinc-200 uppercase tracking-wider">
+                                ${wp.res}
+                            </span>
+                            <span class="px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md border border-white/10 text-[10px] text-zinc-300 capitalize">
+                                ${wp.device}
+                            </span>
+                        </div>
+                        <div class="flex items-end justify-between gap-2">
+                            <div>
+                                <h3 class="text-sm font-medium text-white leading-tight">${wp.title}</h3>
+                                <p class="text-[11px] text-zinc-400">${wp.category} &bull; ${wp.author}</p>
+                            </div>
+                            <button onclick="event.stopPropagation(); openPreviewModalById('${wp.id}')" class="px-3 py-1.5 rounded-lg bg-white text-black text-xs font-medium hover:bg-zinc-200 transition-colors shrink-0">
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            if (filtered.length > state.visibleCount) {
+                loadMoreContainer.classList.remove('hidden');
+                remainingCount.textContent = `(${filtered.length - state.visibleCount} more)`;
+            } else {
+                loadMoreContainer.classList.add('hidden');
+            }
+        }
+
+        function loadMoreWallpapers() {
+            state.visibleCount += 24;
+            renderGrid();
+        }
+
+        // Filter Event Listeners
+        document.querySelectorAll('.device-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.device-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-white', 'text-black', 'shadow-lg');
+                    b.classList.add('bg-white/[0.04]', 'text-zinc-300', 'border', 'border-white/10');
+                });
+                btn.classList.add('active', 'bg-white', 'text-black', 'shadow-lg');
+                btn.classList.remove('bg-white/[0.04]', 'text-zinc-300', 'border', 'border-white/10');
+                state.device = btn.dataset.device;
+                state.visibleCount = 24;
+                renderGrid();
+            });
+        });
+
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.cat-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-white/15', 'text-white', 'border-white/20');
+                    b.classList.add('bg-transparent', 'text-zinc-400', 'border-transparent');
+                });
+                btn.classList.add('active', 'bg-white/15', 'text-white', 'border-white/20');
+                btn.classList.remove('bg-transparent', 'text-zinc-400', 'border-transparent');
+                state.category = btn.dataset.cat;
+                state.visibleCount = 24;
+                renderGrid();
+            });
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            state.search = e.target.value.trim();
+            state.visibleCount = 24;
+            renderGrid();
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && state.apiKey && state.search) {
+                fetchLiveWallpapers(state.search);
+            }
+        });
+
+        function resetFilters() {
+            state.device = 'all';
+            state.category = 'all';
+            state.search = '';
+            searchInput.value = '';
+            document.querySelector('[data-device="all"]').click();
+            document.querySelector('[data-cat="all"]').click();
+        }
+
+        // Preview Modal
+        function openPreviewModalById(id) {
+            const wp = state.wallpapers.find(w => w.id === id);
+            if (wp) openPreviewModal(wp);
+        }
+
+        function openPreviewModal(wp) {
+            state.selectedWallpaper = wp;
+            const modal = document.getElementById('previewModal');
+            const previewUrl = wp.baseUrl.includes('unsplash.com') 
+                ? `${wp.baseUrl}?auto=format&fit=crop&w=1200&q=85` 
+                : wp.baseUrl;
+
+            document.getElementById('modalImg').src = previewUrl;
+            document.getElementById('modalCategory').textContent = wp.category;
+            document.getElementById('modalTitle').textContent = wp.title;
+            document.getElementById('modalAuthor').textContent = `By ${wp.author}`;
+
+            const paletteEl = document.getElementById('modalPalette');
+            paletteEl.innerHTML = (wp.colors || ['#0F172A', '#312E81', '#18181B']).map(c => 
+                `<span class="w-4 h-4 rounded-full border border-white/20" style="background:${c}"></span>`
+            ).join('');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closePreviewModal() {
+            const modal = document.getElementById('previewModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Multi-Device Download Handler
+        async function downloadForDevice(deviceType) {
+            if (!state.selectedWallpaper) return;
+            const wp = state.selectedWallpaper;
+            
+            const dimensions = {
+                phone: { w: 1080, h: 1920, label: 'Phone 9:16' },
+                laptop: { w: 3840, h: 2160, label: 'Laptop 4K' },
+                tablet: { w: 2048, h: 1536, label: 'Tablet 4:3' },
+                ultrawide: { w: 3440, h: 1440, label: 'Ultrawide 21:9' }
+            }[deviceType];
+
+            let downloadUrl = wp.baseUrl;
+            if (wp.seed) {
+                downloadUrl = `https://picsum.photos/seed/${wp.seed}/${dimensions.w}/${dimensions.h}`;
+            } else if (wp.baseUrl.includes('unsplash.com')) {
+                downloadUrl = `${wp.baseUrl}?auto=format&fit=crop&w=${dimensions.w}&h=${dimensions.h}&q=90`;
+            }
+
+            showToast(`Preparing ${dimensions.label} wallpaper...`);
+
+            try {
+                const response = await fetch(downloadUrl);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `OBSIDIAN-${wp.title.replace(/\s+/g, '-').toLowerCase()}-${deviceType}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+                showToast(`Downloaded ${dimensions.label} version`);
+            } catch (err) {
+                window.open(downloadUrl, '_blank');
+                showToast(`Opened ${dimensions.label} in new tab`);
+            }
+        }
+
+        // API Settings Modal
+        function openApiModal() {
+            document.getElementById('apiProvider').value = state.apiProvider;
+            document.getElementById('apiKeyInput').value = state.apiKey;
+            const modal = document.getElementById('apiModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeApiModal() {
+            const modal = document.getElementById('apiModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveApiSettings() {
+            const provider = document.getElementById('apiProvider').value;
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (!key) {
+                showToast('Please enter a valid API key');
+                return;
+            }
+            state.apiProvider = provider;
+            state.apiKey = key;
+            localStorage.setItem('obsidian_api_provider', provider);
+            localStorage.setItem('obsidian_api_key', key);
+            closeApiModal();
+            showToast(`Connected to ${provider.toUpperCase()} API`);
+            fetchLiveWallpapers(state.search || 'dark minimal');
+        }
+
+        function clearApiSettings() {
+            state.apiKey = '';
+            localStorage.removeItem('obsidian_api_key');
+            state.wallpapers = [...curatedWallpapers];
+            closeApiModal();
+            renderGrid();
+            showToast('Switched to Curated Collection');
+        }
+
+        // Live API Fetch (Pexels / Unsplash)
+        async function fetchLiveWallpapers(query) {
+            showToast(`Searching ${state.apiProvider} for "${query}"...`);
+            try {
+                if (state.apiProvider === 'pexels') {
+                    const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=12`, {
+                        headers: { Authorization: state.apiKey }
+                    });
+                    const data = await res.json();
+                    if (data.photos && data.photos.length) {
+                        state.wallpapers = data.photos.map(p => ({
+                            id: `px-${p.id}`,
+                            title: p.alt || 'Pexels Wallpaper',
+                            author: p.photographer,
+                            category: 'Abstract',
+                            device: p.height > p.width ? 'phone' : 'laptop',
+                            res: '4K UHD',
+                            baseUrl: p.src.original,
+                            colors: [p.avg_color || '#18181B', '#09090B']
+                        }));
+                        renderGrid();
+                    }
+                } else {
+                    const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=${state.apiKey}`);
+                    const data = await res.json();
+                    if (data.results && data.results.length) {
+                        state.wallpapers = data.results.map(u => ({
+                            id: `un-${u.id}`,
+                            title: u.alt_description || 'Unsplash Wallpaper',
+                            author: u.user.name,
+                            category: 'Minimal',
+                            device: u.height > u.width ? 'phone' : 'laptop',
+                            res: '4K UHD',
+                            baseUrl: u.urls.raw,
+                            colors: [u.color || '#18181B', '#09090B']
+                        }));
+                        renderGrid();
+                    }
+                }
+            } catch (e) {
+                showToast('API request failed. Check your key.');
+            }
+        }
+
+        // Toast Helper
+        let toastTimeout;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3000);
+        }
+
+        // Close modals on backdrop click
+        document.getElementById('previewModal').addEventListener('click', (e) => {
+            if (e.target.id === 'previewModal') closePreviewModal();
+        });
+        document.getElementById('apiModal').addEventListener('click', (e) => {
+            if (e.target.id === 'apiModal') closeApiModal();
+        });
+
+        // Initial Render
+        renderGrid();
+    </script>
+</body>
+</html>
